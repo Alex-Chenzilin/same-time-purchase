@@ -105,16 +105,26 @@ class CourseChargeView(View):
                 self.request.user.email,
                 json_data['token'],
             )
+
+    #         charge = stripe.PaymentIntent.create(
+ # amount=1000,
+  #currency='gbp',
+  #application_fee_amount=123,
+ # transfer_data={
+#    'destination': '{{CONNECTED_STRIPE_ACCOUNT_ID}}',
+#  }
+#)
             charge = stripe.Charge.create(
                 amount=json_data['amount'],
+            #    application_fee_amount = 10,
                 currency='usd',
-                customer=customer.id,
-                description=json_data['description'],
-                destination={
-                    'amount': int(json_data['amount'] - (json_data['amount'] * fee_percentage)),
-                    'account': course.seller.stripe_user_id,
-                },
-            )
+               customer=customer.id,
+               description=json_data['description'],
+               destination={
+                   'amount': int(json_data['amount'] - (json_data['amount'] * 0.9)),
+                   'account': course.seller.stripe_user_id,
+               },
+           )
             if charge:
                 return JsonResponse({'status': 'success'}, status=202)
         except stripe.error.StripeError as e:
